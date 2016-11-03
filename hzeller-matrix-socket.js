@@ -60,7 +60,6 @@ var App = function() {
 
 	cmd.version('1.0.0');
 	cmd.option('-l --log', 'redirect logs to file');
-	cmd.option('-h --host <host>', 'connect to specified server', 'app-o.se');
 	cmd.option('-p --port <port>', 'connect to specified port (3003)', 3003);
 	cmd.option('-f --fakeit', 'do not access matrix hardware', false);
 	cmd.option('-t --test', '...', false);
