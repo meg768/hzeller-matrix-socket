@@ -63,6 +63,7 @@ var App = function() {
 	cmd.option('-h --host <host>', 'connect to specified server', 'app-o.se');
 	cmd.option('-p --port <port>', 'connect to specified port (3003)', 3003);
 	cmd.option('-f --fakeit', 'do not access matrix hardware', false);
+	cmd.option('-t --test', '...', false);
 	cmd.parse(process.argv);
 
 
@@ -75,7 +76,7 @@ var App = function() {
 
 		queue.on('idle', function() {
 			console.log('Queue empty, nothing to do.');
-			_socket.emit('idle');
+			_io.emit('idle');
 		});
 
 		queue.on('work', function(item, callback) {
@@ -174,6 +175,22 @@ var App = function() {
 			_queue.push({message:message, options:options});
 	}
 
+	function test() {
+		var io = require('socket.io-client');
+		var socket = io('http://localhost:3003/hzeller-matrix');
+
+		socket.on('connect', function() {
+			console.log('Connected.');
+			socket.emit('text', {text:'Hello World!'});
+		});
+
+		socket.on('disconnect', function() {
+			console.log('Disconnected.');
+		});
+
+
+	};
+
 	function run() {
 
 		prefixLogs();
@@ -187,6 +204,9 @@ var App = function() {
 			redirectLogs(Path.join(path, name));
 		}
 
+		if (cmd.test)
+			return test();
+
 		var app = require('http').createServer(function(){});
 		var io = require('socket.io')(app);
 
@@ -199,6 +219,13 @@ var App = function() {
 		_matrix = cmd.fakeit ? new FakeMatrix() : new Matrix({width:32, height:32});
 
 		_io.on('connection', function(socket) {
+
+			console.log('Connection from', socket.id);
+
+			socket.on('disconnect', function() {
+				console.log('Disconnected from', socket.id);
+			});
+
 			socket.on('stop', function() {
 				_matrix.stop(function() {
 					_queue.reset();
