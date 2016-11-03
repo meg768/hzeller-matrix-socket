@@ -10,6 +10,7 @@
     "minimist": "^1.2.0",
     "node-schedule": "^1.1.1",
     "rest-request": "^1.0.7",
+    "socket.io": "^1.5.1",
     "yow": "^1.0.15"
   },
   "devDependencies": {},
