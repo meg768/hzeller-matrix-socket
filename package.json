@@ -1,0 +1,29 @@
+{
+  "name": "hzeller-matrix-socket",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "dependencies": {
+    "bluebird": "^3.4.1",
+    "commander": "^2.9.0",
+    "hzeller-matrix": "^1.0.33",
+    "minimist": "^1.2.0",
+    "node-schedule": "^1.1.1",
+    "rest-request": "^1.0.7",
+    "yow": "^1.0.15"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/meg768/hzeller-matrix-socket.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/meg768/hzeller-matrix-socket/issues"
+  },
+  "homepage": "https://github.com/meg768/hzeller-matrix-socket#readme"
+}
