@@ -61,6 +61,8 @@ var App = function() {
 	cmd.version('1.0.0');
 	cmd.option('-l --log', 'redirect logs to file');
 	cmd.option('-p --port <port>', 'connect to specified port (3003)', 3003);
+	cmd.option('-w --width', 'width of matrix (32)', 32);
+	cmd.option('-h --height', 'height of matrix (32)', 32);
 	cmd.option('-f --fakeit', 'do not access matrix hardware', false);
 	cmd.option('-t --test', '...', false);
 	cmd.parse(process.argv);
@@ -215,7 +217,7 @@ var App = function() {
 
 		_io     = io.of('/hzeller-matrix');
 		_queue  = createQueue();
-		_matrix = cmd.fakeit ? new FakeMatrix() : new Matrix({width:32, height:32});
+		_matrix = cmd.fakeit ? new FakeMatrix() : new Matrix({width:cmd.width, height:cmd.height});
 
 		_io.on('connection', function(socket) {
 
