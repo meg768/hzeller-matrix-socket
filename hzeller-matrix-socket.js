@@ -11,7 +11,7 @@ var redirectLogs = require('yow').redirectLogs;
 var prefixLogs = require('yow').prefixLogs;
 var cmd = require('commander');
 var Matrix = require('hzeller-matrix');
-var Queue = require('yow').Queue;
+var Queue = require('./queue.js');
 
 var FakeMatrix = function() {
 
@@ -217,6 +217,9 @@ var App = function() {
 
 		_io     = io.of('/hzeller-matrix');
 		_queue  = createQueue();
+
+		console.log('width', cmd.width);
+		console.log('height', cmd.height);
 		_matrix = cmd.fakeit ? new FakeMatrix() : new Matrix({width:cmd.width, height:cmd.height});
 
 		_io.on('connection', function(socket) {
