@@ -263,9 +263,30 @@ var App = function() {
 
 		});
 
+		function displayIP() {
 
-		_matrix.runText('Ready');
+			function getIP(name) {
 
+				var os = require('os');
+				var ifaces = os.networkInterfaces();
+
+				var iface = ifaces[name];
+
+				for (var i = 0; i < iface.length; i++)
+				 	if (iface[i].family == 'IPv4')
+						return iface[i].address;
+			}
+
+			var ip = getIP('wlan0')
+
+			if (ip != undefined)
+				_matrix.runText(ip);
+			else
+				_matrix.runText('Ready');
+
+		}
+
+		displayIP();
 		console.log('Started.');
 
 	}
