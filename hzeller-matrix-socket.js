@@ -173,6 +173,7 @@ var App = function(argv) {
 
 		if (_queue.length > 50) {
 			console.log('Queue too big. Truncating!');
+			_queue = [];
 		}
 
 		if (options.priority == 'high') {
