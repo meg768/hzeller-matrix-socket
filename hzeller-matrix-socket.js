@@ -56,6 +56,7 @@ var App = function(argv) {
 			if (options.fontName)
 				options.fontName = sprintf('%s/fonts/%s.ttf', __dirname, options.fontName);
 
+			console.log('runText:', options.text, JSON.stringify(options));
 			_matrix.runText(options.text, options, resolve);
 		});
 
@@ -72,6 +73,7 @@ var App = function(argv) {
 
 			var image = sprintf('%s/images/emojis/%d.png', __dirname, options.id);
 
+			console.log('runImage:', image, JSON.stringify(options));
 			_matrix.runImage(image, options, resolve);
 		});
 
@@ -96,6 +98,7 @@ var App = function(argv) {
 			// Add path
 			fileName = sprintf('%s/animations/%s', __dirname, fileName);
 
+			console.log('runImage:', fileName, JSON.stringify(options));
 			_matrix.runAnimation(fileName, options, resolve);
 		});
 
@@ -105,6 +108,7 @@ var App = function(argv) {
 		options = options || {};
 
 		return new Promise(function(resolve, reject) {
+			console.log('runRain:', JSON.stringify(options));
 			_matrix.runRain(options, resolve);
 		});
 
@@ -114,6 +118,7 @@ var App = function(argv) {
 		options = options || {};
 
 		return new Promise(function(resolve, reject) {
+			console.log('runPerlin:', JSON.stringify(options));
 			_matrix.runPerlin(options, resolve);
 		});
 
