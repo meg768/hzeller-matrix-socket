@@ -47,7 +47,7 @@ var App = function(argv) {
 	}
 
 
-	function runText(text, options) {
+	function runText(options) {
 
 		options = options || {};
 
@@ -56,7 +56,7 @@ var App = function(argv) {
 			if (options.fontName)
 				options.fontName = sprintf('%s/fonts/%s.ttf', __dirname, options.fontName);
 
-			_matrix.runText(text, options, resolve);
+			_matrix.runText(options.text, options, resolve);
 		});
 
 	}
@@ -265,7 +265,7 @@ var App = function(argv) {
 				});
 
 				socket.on('text', function(options) {
-					enqueue(runText('text', options), options);
+					enqueue(runText(options), options);
 				});
 
 				socket.on('animation', function(options) {
