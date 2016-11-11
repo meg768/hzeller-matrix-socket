@@ -168,6 +168,10 @@ var App = function(argv) {
 		if (options == undefined)
 			options = {};
 
+		if (_queue.length > 50) {
+			console.log('Queue too big. Truncating!');
+		}
+
 		if (options.priority == 'high') {
 			_matrix.stop(function() {
 				_queue = [promise];
