@@ -49,9 +49,10 @@ var App = function(argv) {
 
 	function runText(options) {
 
-		options = options || {};
 
 		return new Promise(function(resolve, reject) {
+
+			options = options || {};
 
 			if (options.fontName)
 				options.fontName = sprintf('%s/fonts/%s.ttf', __dirname, options.fontName);
@@ -64,9 +65,9 @@ var App = function(argv) {
 
 	function runEmoji(options) {
 
-		options = options || {};
-
 		return new Promise(function(resolve, reject) {
+
+			options = options || {};
 
 			if (!options.id || options.id < 1 || options.id > 846)
 				options.id = 704;
@@ -81,9 +82,10 @@ var App = function(argv) {
 
 	function runAnimation(options) {
 
-		options = options || {};
-
 		return new Promise(function(resolve, reject) {
+
+			options = options || {};
+
 			var fileName = options.name;
 
 			// Generate a random one if not specified
@@ -105,9 +107,11 @@ var App = function(argv) {
 	}
 
 	function runRain(options) {
-		options = options || {};
 
 		return new Promise(function(resolve, reject) {
+
+			options = options || {};
+
 			console.log('runRain:', JSON.stringify(options));
 			_matrix.runRain(options, resolve);
 		});
@@ -115,9 +119,11 @@ var App = function(argv) {
 	}
 
 	function runPerlin(options) {
-		options = options || {};
 
 		return new Promise(function(resolve, reject) {
+
+			options = options || {};
+
 			console.log('runPerlin:', JSON.stringify(options));
 			_matrix.runPerlin(options, resolve);
 		});
@@ -162,7 +168,6 @@ var App = function(argv) {
 		if (options == undefined)
 			options = {};
 
-/*
 		if (options.priority == 'high') {
 			_matrix.stop(function() {
 				_queue = [promise];
@@ -175,7 +180,6 @@ var App = function(argv) {
 			}
 		}
 		else
-		*/
 			_queue.push(promise);
 
 		work();
