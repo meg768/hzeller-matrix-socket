@@ -284,23 +284,23 @@ var App = function(argv) {
 				});
 
 				socket.on('text', function(options) {
-					enqueue(runText(options), options);
+					enqueue(runText.bind(null, options), options);
 				});
 
 				socket.on('animation', function(options) {
-					enqueue(runAnimation(options), options);
+					enqueue(runAnimation.bind(null, options), options);
 				});
 
 				socket.on('emoji', function(options) {
-					enqueue(runEmoji(options), options);
+					enqueue(runEmoji.bind(null, options), options);
 				});
 
 				socket.on('rain', function(options) {
-					enqueue(runRain(options), options);
+					enqueue(runRain.bind(null, options), options);
 				});
 
 				socket.on('perlin', function(options) {
-					enqueue(runPerlin(options), options);
+					enqueue(runPerlin.bind(null, options), options);
 				});
 
 				socket.on('hello', function(data) {
