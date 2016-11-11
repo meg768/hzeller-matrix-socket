@@ -2,16 +2,12 @@
   "name": "hzeller-matrix-socket",
   "version": "1.0.0",
   "description": "",
-  "main": "app.js",
+  "main": "hzeller-matrix-socket.js",
   "dependencies": {
-    "bluebird": "^3.4.1",
     "commander": "^2.9.0",
     "hzeller-matrix": "^1.0.33",
-    "minimist": "^1.2.0",
-    "node-schedule": "^1.1.1",
-    "rest-request": "^1.0.7",
     "socket.io": "^1.5.1",
-    "socket.io-client": "^1.5.1",
+    "yargs": "^6.3.0",
     "yow": "^1.0.15"
   },
   "devDependencies": {},
