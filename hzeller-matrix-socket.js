@@ -16,6 +16,7 @@ var Matrix = require('hzeller-matrix');
 
 var App = function(argv) {
 
+	var _self    = this;
 	var _queue   = undefined;
 	var _matrix  = undefined;
 	var _io      = undefined;
@@ -168,6 +169,8 @@ var App = function(argv) {
 		if (options == undefined)
 			options = {};
 
+		console.log('Incoming:', options);
+
 		if (_queue.length > 50) {
 			console.log('Queue too big. Truncating!');
 		}
@@ -289,23 +292,23 @@ var App = function(argv) {
 				});
 
 				socket.on('text', function(options) {
-					enqueue(runText.bind(null, options), options);
+					enqueue(runText.bind(self, options), options);
 				});
 
 				socket.on('animation', function(options) {
-					enqueue(runAnimation.bind(null, options), options);
+					enqueue(runAnimation.bind(self, options), options);
 				});
 
 				socket.on('emoji', function(options) {
-					enqueue(runEmoji.bind(null, options), options);
+					enqueue(runEmoji.bind(self, options), options);
 				});
 
 				socket.on('rain', function(options) {
-					enqueue(runRain.bind(null, options), options);
+					enqueue(runRain.bind(self, options), options);
 				});
 
 				socket.on('perlin', function(options) {
-					enqueue(runPerlin.bind(null, options), options);
+					enqueue(runPerlin.bind(self, options), options);
 				});
 
 				socket.on('hello', function(data) {
