@@ -21,7 +21,7 @@ var App = function(argv) {
 	var _matrix  = undefined;
 	var _io      = undefined;
 	var _server  = undefined;
-	var _working = false;
+	var _promise = undefined;
 
 	var argv = parseArgs();
 
@@ -132,37 +132,28 @@ var App = function(argv) {
 	}
 
 
-
 	function work() {
-
-
 		if (_queue.length > 0) {
 
-			var promise = _queue.splice(0, 1)[0];
+			if (_promise == undefined) {
+				_promise = _queue[0];
 
-			promise().then(function() {
-				if (_queue.length > 0) {
-					setTimeout(work, 100);
+				_promise().then(function(){
+					_promise = undefined;
+
+					setTimeout(work, 0);
+				})
+				.catch(error) {
+					console.log(error);
 				}
-				else {
-					_io.emit('idle');
-					setTimeout(work, 100);
-
-				}
-			})
-			.catch(function(error) {
-				console.log(error);
-				setTimeout(work, 100);
-			});
-
+			}
 
 		}
 		else {
-			setTimeout(work, 1000);
-
+			_promise = undefined;
+			_io.emit('idle');
 		}
-
-	};
+	}
 
 	function enqueue(promise, options) {
 
@@ -189,6 +180,8 @@ var App = function(argv) {
 		}
 		else
 			_queue.push(promise);
+
+		work();
 
 	}
 
@@ -319,8 +312,6 @@ var App = function(argv) {
 
 			if (argv.dryRun)
 				runDry();
-
-			work();
 
 
 
