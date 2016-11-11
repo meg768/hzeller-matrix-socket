@@ -20,7 +20,7 @@ var App = function(argv) {
 	var _matrix  = undefined;
 	var _io      = undefined;
 	var _server  = undefined;
-	var _promise = undefined;
+	var _working = false;
 
 	var argv = parseArgs();
 
@@ -137,14 +137,16 @@ var App = function(argv) {
 
 		if (_queue.length > 0) {
 
-			if (_promise == undefined) {
-				_promise = _queue.splice(0, 1)[0];
+			if (!_working) {
+				_working = true;
 
-				_promise().then(function() {
-					_promise = undefined;
+				var promise = _queue[0];
 
-					setTimeout(work, 0);
+				promise().then(function() {
+					_queue.shift();
+					_working = false;
 
+					work();
 				})
 				.catch(function(error) {
 					console.log(error);
@@ -154,7 +156,7 @@ var App = function(argv) {
 
 		}
 		else {
-			_promise = undefined;
+			_working = false;
 			_io.emit('idle');
 
 		}
