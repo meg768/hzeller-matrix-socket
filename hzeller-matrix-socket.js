@@ -133,25 +133,21 @@ var App = function(argv) {
 
 
 	function work() {
-		if (_queue.length > 0) {
+		if (_queue.length > 0 && _promise == undefined) {
 
-			if (_promise == undefined) {
-				_promise = _queue.splice(0, 1)[0];
+			_promise = _queue.splice(0, 1)[0];
 
-				_promise().then(function(){
-					_promise = undefined;
+			_promise().then(function(){
+				_promise = undefined;
 
+				if (_queue.length > 0)
 					setTimeout(work, 0);
-				})
-				.catch(function(error) {
-					console.log(error);
-				});
-			}
-
-		}
-		else {
-			_promise = undefined;
-			_io.emit('idle');
+				else
+					_io.emit('idle');
+			})
+			.catch(function(error) {
+				console.log(error);
+			});
 		}
 	}
 
@@ -161,7 +157,6 @@ var App = function(argv) {
 			options = {};
 
 		console.log('Incoming:', options);
-
 
 		if (options.priority == 'high') {
 			_matrix.stop(function() {
