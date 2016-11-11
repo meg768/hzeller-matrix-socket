@@ -134,7 +134,7 @@ var App = function(argv) {
 
 			_promise.then(function() {
 				_queue.shift();
-				
+
 				_promise = undefined;
 
 				if (_queue.length > 0) {
