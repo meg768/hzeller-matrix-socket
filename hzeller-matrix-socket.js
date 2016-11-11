@@ -131,7 +131,7 @@ var App = function(argv) {
 				_promise = undefined;
 
 				if (_queue.length > 0) {
-					setTimeout(work(), 0);
+					setTimeout(work, 0);
 				}
 				else {
 					console.log('Queue empty. Nothing to do.');
@@ -139,7 +139,7 @@ var App = function(argv) {
 				}
 			})
 			.catch(function(error) {
-				console.log('ERROR', error);
+				console.log(error);
 			});
 
 		}
