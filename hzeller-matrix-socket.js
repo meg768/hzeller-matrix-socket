@@ -143,7 +143,7 @@ var App = function(argv) {
 
 					setTimeout(work, 0);
 				})
-				.catch(error) {
+				.catch(function(error)) {
 					console.log(error);
 				}
 			}
