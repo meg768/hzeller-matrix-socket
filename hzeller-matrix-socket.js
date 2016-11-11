@@ -9,180 +9,212 @@ var isObject = require('yow').isObject;
 var isString = require('yow').isString;
 var redirectLogs = require('yow').redirectLogs;
 var prefixLogs = require('yow').prefixLogs;
-var cmd = require('commander');
 var Matrix = require('hzeller-matrix');
-var Queue = require('yow').Queue;
-
-var FakeMatrix = function() {
-
-	function fake() {
-
-	};
-
-	this.isRunning = function() {
-		return false;
-	}
-
-	this.stop = function() {
-		console.log('stop');
-	};
-
-	this.runText = function(text, options, callback) {
-		console.log('runText:', text, JSON.stringify(options));
-		setTimeout(callback, 1000);
-	};
 
 
-	this.runImage = function(image, options, callback) {
-		console.log('runImage:', image, JSON.stringify(options));
-		setTimeout(callback, 1000);
-	};
-
-	this.runAnimation = function(animation, options, callback) {
-		console.log('runAnimation:', animation, JSON.stringify(options));
-		setTimeout(callback, 1000);
-	};
-
-	this.runRain = function(options, callback) {
-		console.log('runRain:', JSON.stringify(options));
-		setTimeout(callback, 1000);
-	};
-
-	this.runPerlin = function(options, callback) {
-		console.log('runPerlin:', JSON.stringify(options));
-		setTimeout(callback, 1000);
-	};
-
-};
 
 
-var App = function() {
+var App = function(argv) {
 
-	cmd.version('1.0.0');
-	cmd.option('-l --log', 'redirect logs to file');
-	cmd.option('-p --port <port>', 'connect to specified port (3003)', 3003);
-	cmd.option('-w --width <width>', 'width of matrix (32)', 32);
-	cmd.option('-h --height <height>', 'height of matrix (32)', 32);
-	cmd.option('-f --fakeit', 'do not access matrix hardware', false);
-	cmd.option('-t --test', '...', false);
-	cmd.parse(process.argv);
+	var _queue   = undefined;
+	var _matrix  = undefined;
+	var _io      = undefined;
+	var _server  = undefined;
+	var _promise = undefined;
 
+	var argv = parseArgs();
 
-	var _queue  = undefined;
-	var _matrix = undefined;
-	var _io     = undefined;
+	function parseArgs() {
 
-	function createQueue() {
-		var queue = new Queue();
+		var args = require('yargs');
 
-		queue.on('idle', function() {
-			console.log('Queue empty, nothing to do.');
-			_io.emit('idle');
+		args.usage('Usage: $0 [options]');
+		args.help('h').alias('h', 'help');
+
+		args.option('l', {alias:'log',         describe:'Redirect logs to file'});
+		args.option('H', {alias:'height',      describe:'Height of RGB matrix', default:32});
+		args.option('W', {alias:'width',       describe:'Width of RGB matrix', default:32});
+		args.option('p', {alias:'port',        describe:'Listen to specified port', default:3003});
+		args.option('n', {alias:'dry-run',     describe:'Do not access hardware, just print'});
+
+		args.wrap(null);
+
+		args.check(function(argv) {
+			return true;
 		});
 
-		queue.on('work', function(item, callback) {
+		return args.argv;
+	}
 
-			var message = item.message;
-			var options = item.options;
 
-			console.log('Running', message, JSON.stringify(options));
+	function runText(text, options) {
 
-			switch (message) {
-				case 'text': {
-					var text = options.text ? options.text : 'ABC 123';
+		options = options || {};
 
-					if (options.fontName)
-						options.fontName = sprintf('%s/fonts/%s.ttf', __dirname, options.fontName);
+		return new Promise(function(resolve, reject) {
 
-					_matrix.runText(text, options, function() {
-						callback();
-					});
-					break;
-				}
-				case 'perlin': {
-					_matrix.runPerlin(options, callback);
-					break;
-				}
+			if (options.fontName)
+				options.fontName = sprintf('%s/fonts/%s.ttf', __dirname, options.fontName);
 
-				case 'emoji': {
-					if (!options.id || options.id < 1 || options.id > 846)
-						options.id = 704;
+			_matrix.runText(text, options, resolve);
+		});
 
-					var image = sprintf('%s/images/emojis/%d.png', __dirname, options.id);
-					_matrix.runImage(image, options, callback);
+	}
 
-					break;
-				}
+	function runEmoji(options) {
 
-				case 'animation': {
-					var fileName = options.name;
+		options = options || {};
 
-					// Generate a random one if not specified
-					if (fileName == undefined) {
-						var files = fs.readdirSync(sprintf('%s/animations', __dirname));
-						fileName = random(files);
-					}
-					else {
-						fileName = sprintf('%s.gif', fileName);
-					}
+		return new Promise(function(resolve, reject) {
 
-					// Add path
-					fileName = sprintf('%s/animations/%s', __dirname, fileName);
+			if (!options.id || options.id < 1 || options.id > 846)
+				options.id = 704;
 
-					_matrix.runAnimation(fileName, options, callback);
+			var image = sprintf('%s/images/emojis/%d.png', __dirname, options.id);
 
-					break;
-				}
+			_matrix.runImage(image, options, resolve);
+		});
 
-				case 'rain': {
-					_matrix.runRain(options, callback);
-					break;
-				}
+	}
 
-				default: {
-					console.log('Invalid message: ', message);
-					callback();
-				}
+	function runAnimation(options) {
+
+		options = options || {};
+
+		return new Promise(function(resolve, reject) {
+			var fileName = options.name;
+
+			// Generate a random one if not specified
+			if (fileName == undefined) {
+				var files = fs.readdirSync(sprintf('%s/animations', __dirname));
+				fileName = random(files);
+			}
+			else {
+				fileName = sprintf('%s.gif', fileName);
 			}
 
-		});
+			// Add path
+			fileName = sprintf('%s/animations/%s', __dirname, fileName);
 
-		return queue;
+			_matrix.runAnimation(fileName, options, resolve);
+		});
 
 	}
 
-	function runMatrix(message, options) {
+	function runRain(options) {
+		options = options || {};
+
+		return new Promise(function(resolve, reject) {
+			_matrix.runRain(options, resolve);
+		});
+
+	}
+
+	function runPerlin(options) {
+		options = options || {};
+
+		return new Promise(function(resolve, reject) {
+			_matrix.runPerlin(options, resolve);
+		});
+
+	}
+
+
+
+	function work() {
+		var self = this;
+
+		if (_queue.length > 0 && _promise == undefined) {
+			_promise = _queue.splice(0, 1)[0];
+
+			_promise.then(function() {
+				_promise = undefined;
+
+				if (_queue.length > 0) {
+					setTimeout(work(), 0);
+				}
+				else {
+					console.log('Queue empty. Nothing to do.');
+					_io.emit('idle');
+				}
+			});
+
+		}
+
+	};
+
+	function enqueue(promise, options) {
 
 		if (options == undefined)
 			options = {};
 
-		if (_queue == undefined)
-			_queue = createQueue();
-
 		if (options.priority == 'high') {
 			_matrix.stop(function() {
-				_queue.reset();
-				_queue = createQueue();
-				_queue.push({message:message, options:options});
-
+				_queue = [promise];
+				_promise = undefined;
 			});
 		}
 		else if (options.priority == 'low') {
 			if (!_matrix.isRunning()) {
-				_queue.push({message:message, options:options});
+				_queue.push(promise);
 			}
 		}
 		else
-			_queue.push({message:message, options:options});
+			_queue.push(promise);
+
+		work();
 	}
 
-	function test() {
+
+	function displayIP() {
+
+		return new Promise(function(resolve, reject) {
+			function getIP(name) {
+
+				try {
+					var os = require('os');
+					var ifaces = os.networkInterfaces();
+
+					var iface = ifaces[name];
+
+					for (var i = 0; i < iface.length; i++)
+						if (iface[i].family == 'IPv4')
+							return iface[i].address;
+
+				}
+				catch(error) {
+					return undefined;
+
+				}
+			}
+
+			var ip = getIP('wlan0');
+
+			if (ip == undefined)
+				ip = 'Ready';
+
+			_matrix.runText(ip, {}, resolve);
+		});
+
+	}
+
+	function runDry() {
 		var io = require('socket.io-client');
-		var socket = io('http://localhost:3003/hzeller-matrix');
+		var socket = io(sprintf('http://localhost:%d/hzeller-matrix', argv.port));
+
 
 		socket.on('connect', function() {
 			console.log('Connected.');
-			socket.emit('text', {text:'Hello World!'});
+
+			socket.emit(random(['text', 'animation', 'rain', 'perlin', 'emoji']));
+
+			socket.on('idle', function() {
+				var count = random(1, 4);
+
+				for (var i = 0; i < count; i++)
+					socket.emit(random(['text', 'animation', 'rain', 'perlin', 'emoji']));
+			});
+
 		});
 
 		socket.on('disconnect', function() {
@@ -196,96 +228,75 @@ var App = function() {
 
 		prefixLogs();
 
-		if (cmd.log) {
-			var date = new Date();
-			var path = sprintf('%s/logs', __dirname);
-			var name = sprintf('%04d-%02d-%02d-%02d-%02d-%02d.log', date.getFullYear(), date.getMonth() + 1, date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds());
+		if (argv.log) {
+			var parts = Path.parse(__filename);
+			var logFile = Path.join(parts.dir, parts.name + '.log');
 
-			mkpath(path);
-			redirectLogs(Path.join(path, name));
+			redirectLogs(logFile);
 		}
 
-		if (cmd.test)
-			return test();
+		_queue  = [];
+		_matrix = new Matrix(argv.dryRun ? {hardware:'none'} : {width:argv.width, height:argv.height});
+		_server = require('http').createServer(function(){});
+		_io     = require('socket.io')(_server).of('/hzeller-matrix');
 
-		var app = require('http').createServer(function(){});
-		var io = require('socket.io')(app);
 
-		app.listen(cmd.port, function() {
-			console.log('Listening on port', cmd.port, '...');
-		});
+		displayIP().then(function() {
 
-		_io     = io.of('/hzeller-matrix');
-		_queue  = createQueue();
+			console.log('Started', new Date());
 
-		_matrix = cmd.fakeit ? new FakeMatrix() : new Matrix({width:cmd.width, height:cmd.height});
-
-		_io.on('connection', function(socket) {
-
-			console.log('Connection from', socket.id);
-
-			socket.on('disconnect', function() {
-				console.log('Disconnected from', socket.id);
+			_server.listen(argv.port, function() {
+				console.log('Listening on port', argv.port, '...');
 			});
 
-			socket.on('stop', function() {
-				_matrix.stop(function() {
-					_queue.reset();
-					_queue = createQueue();
+			_io.on('connection', function(socket) {
+
+				console.log('Connection from', socket.id);
+
+				socket.on('disconnect', function() {
+					console.log('Disconnected from', socket.id);
 				});
+
+				socket.on('stop', function() {
+					_matrix.stop(function() {
+						_queue = [promise];
+						_promise = undefined;
+					});
+				});
+
+				socket.on('text', function(options) {
+					enqueue(runText('text', options), options);
+				});
+
+				socket.on('animation', function(options) {
+					enqueue(runAnimation(options), options);
+				});
+
+				socket.on('emoji', function(options) {
+					enqueue(runEmoji(options), options);
+				});
+
+				socket.on('rain', function(options) {
+					enqueue(runRain(options), options);
+				});
+
+				socket.on('perlin', function(options) {
+					enqueue(runPerlin(options), options);
+				});
+
+				socket.on('hello', function(data) {
+					console.log('hello');
+				})
+
 			});
 
-			socket.on('text', function(options) {
-				runMatrix('text', options);
-			});
+			if (argv.dryRun)
+				runDry();
 
-			socket.on('animation', function(options) {
-				runMatrix('animation', options);
-			});
 
-			socket.on('emoji', function(options) {
-				runMatrix('emoji', options);
-			});
-
-			socket.on('rain', function(options) {
-				runMatrix('rain', options);
-			});
-
-			socket.on('perlin', function(options) {
-				runMatrix('perlin', options);
-			});
-
-			socket.on('hello', function(data) {
-				console.log('hello');
-			})
 
 		});
 
-		function displayIP() {
-
-			function getIP(name) {
-
-				var os = require('os');
-				var ifaces = os.networkInterfaces();
-
-				var iface = ifaces[name];
-
-				for (var i = 0; i < iface.length; i++)
-				 	if (iface[i].family == 'IPv4')
-						return iface[i].address;
-			}
-
-			var ip = getIP('wlan0')
-
-			if (ip != undefined)
-				_matrix.runText(ip);
-			else
-				_matrix.runText('Ready');
-
-		}
-
-		displayIP();
-		console.log('Started.');
 
 	}
 
