@@ -158,6 +158,7 @@ var App = function(argv) {
 		if (options == undefined)
 			options = {};
 
+/*
 		if (options.priority == 'high') {
 			_matrix.stop(function() {
 				_queue = [promise];
@@ -170,6 +171,7 @@ var App = function(argv) {
 			}
 		}
 		else
+		*/
 			_queue.push(promise);
 
 		work();
