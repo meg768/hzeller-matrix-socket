@@ -134,29 +134,31 @@ var App = function(argv) {
 
 
 	function work() {
+
+
 		if (_queue.length > 0) {
 
-			if (!_working) {
-				_working = true;
+			var promise = _queue.splice(0, 1)[0];
 
-				var promise = _queue[0];
+			promise().then(function() {
+				if (_queue.length > 0) {
+					setTimeout(work, 100);
+				}
+				else {
+					_io.emit('idle');
+					setTimeout(work, 100);
 
-				promise().then(function() {
-					_queue.shift();
-					_working = false;
-
-					work();
-				})
-				.catch(function(error) {
-					console.log(error);
-				});
+				}
+			})
+			.catch(function(error) {
+				console.log(error);
+			});
 
 			}
 
 		}
 		else {
-			_working = false;
-			_io.emit('idle');
+			setTimeout(work, 1000);
 
 		}
 
@@ -187,7 +189,6 @@ var App = function(argv) {
 		else
 			_queue.push(promise);
 
-		work();
 	}
 
 
@@ -317,6 +318,8 @@ var App = function(argv) {
 
 			if (argv.dryRun)
 				runDry();
+
+			work();
 
 
 
