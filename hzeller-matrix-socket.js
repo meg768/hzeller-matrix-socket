@@ -129,25 +129,29 @@ var App = function(argv) {
 	function work() {
 		var self = this;
 
-		if (_queue.length > 0 && _promise == undefined) {
-			_promise = _queue[0];
+		if (_queue.length > 0) {
 
-			_promise.then(function() {
-				_queue.shift();
+			if (_promise == undefined) {
+				_promise = _queue[0];
 
-				_promise = undefined;
+				_promise.then(function() {
+					_queue.shift();
 
-				if (_queue.length > 0) {
-					setTimeout(work, 0);
-				}
-				else {
-					console.log('Queue empty. Nothing to do.');
-					_io.emit('idle');
-				}
-			})
-			.catch(function(error) {
-				console.log(error);
-			});
+					_promise = undefined;
+
+					work();
+
+				})
+				.catch(function(error) {
+					console.log(error);
+				});
+
+			}
+
+		}
+		else {
+			_promise = undefined;
+			_io.emit('idle');
 
 		}
 
