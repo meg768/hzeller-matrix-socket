@@ -152,9 +152,9 @@ var App = function(argv) {
 			})
 			.catch(function(error) {
 				console.log(error);
+				setTimeout(work, 100);
 			});
 
-			}
 
 		}
 		else {
