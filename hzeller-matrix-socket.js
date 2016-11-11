@@ -138,7 +138,7 @@ var App = function(argv) {
 		if (_queue.length > 0) {
 
 			if (_promise == undefined) {
-				_promise = _queue.splice(0, 1);
+				_promise = _queue.splice(0, 1)[0];
 
 				_promise().then(function() {
 					_promise = undefined;
