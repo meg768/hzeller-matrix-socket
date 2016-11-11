@@ -130,9 +130,11 @@ var App = function(argv) {
 		var self = this;
 
 		if (_queue.length > 0 && _promise == undefined) {
-			_promise = _queue.splice(0, 1)[0];
+			_promise = _queue[0];
 
 			_promise.then(function() {
+				_queue.shift();
+				
 				_promise = undefined;
 
 				if (_queue.length > 0) {
