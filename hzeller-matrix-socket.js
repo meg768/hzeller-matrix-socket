@@ -162,10 +162,6 @@ var App = function(argv) {
 
 		console.log('Incoming:', options);
 
-		if (_queue.length > 50) {
-			console.log('Queue too big. Truncating!');
-			_queue = [];
-		}
 
 		if (options.priority == 'high') {
 			_matrix.stop(function() {
@@ -180,6 +176,12 @@ var App = function(argv) {
 		}
 		else
 			_queue.push(promise);
+
+		if (_queue.length > 10) {
+			console.log('Queue too big! Truncating. Keeping last 10.');
+			_queue.splice(0, _queue.length - 10);
+		}
+
 
 		work();
 
