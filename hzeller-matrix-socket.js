@@ -137,6 +137,9 @@ var App = function(argv) {
 					console.log('Queue empty. Nothing to do.');
 					_io.emit('idle');
 				}
+			})
+			.catch(function(error) {
+				console.log('ERROR', error);
 			});
 
 		}
