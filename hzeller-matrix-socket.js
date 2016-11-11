@@ -16,7 +16,7 @@ var Matrix = require('hzeller-matrix');
 
 var App = function(argv) {
 
-	var _self    = this;
+	var _this    = this;
 	var _queue   = undefined;
 	var _matrix  = undefined;
 	var _io      = undefined;
@@ -134,8 +134,6 @@ var App = function(argv) {
 
 
 	function work() {
-		var self = this;
-
 		if (_queue.length > 0) {
 
 			if (!_working) {
@@ -292,23 +290,23 @@ var App = function(argv) {
 				});
 
 				socket.on('text', function(options) {
-					enqueue(runText.bind(self, options), options);
+					enqueue(runText.bind(_this, options), options);
 				});
 
 				socket.on('animation', function(options) {
-					enqueue(runAnimation.bind(self, options), options);
+					enqueue(runAnimation.bind(_this, options), options);
 				});
 
 				socket.on('emoji', function(options) {
-					enqueue(runEmoji.bind(self, options), options);
+					enqueue(runEmoji.bind(_this, options), options);
 				});
 
 				socket.on('rain', function(options) {
-					enqueue(runRain.bind(self, options), options);
+					enqueue(runRain.bind(_this, options), options);
 				});
 
 				socket.on('perlin', function(options) {
-					enqueue(runPerlin.bind(self, options), options);
+					enqueue(runPerlin.bind(_this, options), options);
 				});
 
 				socket.on('hello', function(data) {
