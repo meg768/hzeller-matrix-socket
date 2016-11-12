@@ -132,7 +132,7 @@ var App = function(argv) {
 	}
 
 
-	function work() {
+	function dequeue() {
 		if (_queue.length > 0 && _promise == undefined) {
 
 			_promise = _queue.splice(0, 1)[0];
@@ -141,7 +141,7 @@ var App = function(argv) {
 				_promise = undefined;
 
 				if (_queue.length > 0)
-					setTimeout(work, 0);
+					setTimeout(dequeue, 0);
 				else
 					_io.emit('idle');
 			})
@@ -178,7 +178,7 @@ var App = function(argv) {
 		}
 
 
-		work();
+		dequeue();
 
 	}
 
