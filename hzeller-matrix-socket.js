@@ -58,7 +58,7 @@ var App = function(argv) {
 			if (options.fontName)
 				options.fontName = sprintf('%s/fonts/%s.ttf', __dirname, options.fontName);
 
-			console.log('runText:', options.text, JSON.stringify(options));
+			console.log('runText:', JSON.stringify(options));
 			_matrix.runText(options.text, options, resolve);
 		});
 
@@ -73,10 +73,10 @@ var App = function(argv) {
 			if (!options.id || options.id < 1 || options.id > 846)
 				options.id = 704;
 
-			var image = sprintf('%s/images/emojis/%d.png', __dirname, options.id);
+			options.image = sprintf('%s/images/emojis/%d.png', __dirname, options.id);
 
-			console.log('runImage:', image, JSON.stringify(options));
-			_matrix.runImage(image, options, resolve);
+			console.log('runImage:', JSON.stringify(options));
+			_matrix.runImage(options.image, options, resolve);
 		});
 
 	}
@@ -87,22 +87,22 @@ var App = function(argv) {
 
 			options = options || {};
 
-			var fileName = options.name;
+			options.fileName = options.name;
 
 			// Generate a random one if not specified
-			if (fileName == undefined) {
+			if (options.fileName == undefined) {
 				var files = fs.readdirSync(sprintf('%s/animations', __dirname));
-				fileName = random(files);
+				options.fileName = random(files);
 			}
 			else {
-				fileName = sprintf('%s.gif', fileName);
+				options.fileName = sprintf('%s.gif', options.fileName);
 			}
 
 			// Add path
-			fileName = sprintf('%s/animations/%s', __dirname, fileName);
+			options.fileName = sprintf('%s/animations/%s', __dirname, options.fileName);
 
-			console.log('runImage:', fileName, JSON.stringify(options));
-			_matrix.runAnimation(fileName, options, resolve);
+			console.log('runImage:', JSON.stringify(options));
+			_matrix.runAnimation(options.fileName, options, resolve);
 		});
 
 	}
