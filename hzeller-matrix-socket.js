@@ -156,8 +156,6 @@ var App = function(argv) {
 		if (options == undefined)
 			options = {};
 
-		console.log('Incoming:', options);
-
 		if (options.priority == 'high') {
 			_queue = [promise];
 			_promise = undefined;
