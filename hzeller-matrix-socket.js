@@ -159,10 +159,9 @@ var App = function(argv) {
 		console.log('Incoming:', options);
 
 		if (options.priority == 'high') {
-			_matrix.stop(function() {
-				_queue = [promise];
-				_promise = undefined;
-			});
+			_queue = [promise];
+			_promise = undefined;
+			_matrix.stop();
 		}
 		else if (options.priority == 'low') {
 			if (!_matrix.isRunning()) {
@@ -172,9 +171,9 @@ var App = function(argv) {
 		else
 			_queue.push(promise);
 
-		if (_queue.length > 10) {
-			console.log('Queue too big! Truncating. Keeping last 10.');
-			_queue.splice(0, _queue.length - 10);
+		if (_queue.length > 50) {
+			console.log('Queue too big! Truncating.');
+			_queue = [];
 		}
 
 
