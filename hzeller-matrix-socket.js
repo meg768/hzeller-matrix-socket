@@ -149,7 +149,7 @@ var App = function(argv) {
 		if (_queue.isEmpty()) {
 			_queue.enqueue(promise);
 
-			_queue.enqueue.dequeue().then(function() {
+			_queue.dequeue().then(function() {
 				_io.emit('idle');
 
 			}).catch(function(error) {
