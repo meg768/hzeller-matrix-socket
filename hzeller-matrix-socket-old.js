@@ -9,7 +9,6 @@ var isObject = require('yow').isObject;
 var isString = require('yow').isString;
 var redirectLogs = require('yow').redirectLogs;
 var prefixLogs = require('yow').prefixLogs;
-var Queue = require('yow/queue');
 var Matrix = require('hzeller-matrix');
 
 
@@ -18,7 +17,7 @@ var Matrix = require('hzeller-matrix');
 var App = function(argv) {
 
 	var _this    = this;
-	var _queue   = new Queue(50);
+	var _queue   = undefined;
 	var _matrix  = undefined;
 	var _io      = undefined;
 	var _server  = undefined;
@@ -132,36 +131,51 @@ var App = function(argv) {
 
 	}
 
-	function enqueue(promise, options) {
 
+	function dequeue() {
+		if (_queue.length > 0 && _promise == undefined) {
+
+			_promise = _queue.splice(0, 1)[0];
+
+			_promise().then(function(){
+				_promise = undefined;
+
+				if (_queue.length > 0)
+					setTimeout(dequeue, 0);
+				else
+					_io.emit('idle');
+			})
+			.catch(function(error) {
+				console.log(error);
+			});
+		}
+	}
+
+	function enqueue(promise, options) {
 
 		if (options == undefined)
 			options = {};
 
-		if (options.priority == 'low' && _matrix.isRunning())
-			return;
-
 		if (options.priority == 'high') {
-			_queue.clear();
+			_queue = [promise];
+			_promise = undefined;
 			_matrix.stop();
 		}
-
-		if (_queue.isEmpty()) {
-			_queue.enqueue(promise);
-
-			_queue.enqueue.dequeue().then(function() {
-				_io.emit('idle');
-
-			}).catch(function(error) {
-				console.log(error.stack);
-				_io.emit('idle');
-
-			});
-
+		else if (options.priority == 'low') {
+			if (!_matrix.isRunning()) {
+				_queue.push(promise);
+			}
 		}
-		else {
-			_queue.enqueue(promise);
+		else
+			_queue.push(promise);
+
+		if (_queue.length > 50) {
+			console.log('Queue too big! Truncating.');
+			_queue = [];
 		}
+
+
+		dequeue();
 
 	}
 
@@ -235,6 +249,7 @@ var App = function(argv) {
 			redirectLogs(logFile);
 		}
 
+		_queue  = [];
 		_matrix = new Matrix(argv.dryRun ? {hardware:'none'} : {width:argv.width, height:argv.height});
 		_server = require('http').createServer(function(){});
 		_io     = require('socket.io')(_server).of('/hzeller-matrix');
@@ -257,8 +272,10 @@ var App = function(argv) {
 				});
 
 				socket.on('stop', function() {
-					_queue.clear();
-					_matrix.stop();
+					_matrix.stop(function() {
+						_queue = [promise];
+						_promise = undefined;
+					});
 				});
 
 				socket.on('text', function(options) {
