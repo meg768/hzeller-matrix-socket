@@ -144,6 +144,7 @@ var App = function(argv) {
 		function enqueue() {
 			if (options.priority == '!') {
 				_queue.setQueue([promise]);
+				_matrix.stop();
 			}
 			else if (options.priority == 'high') {
 				_queue.prequeue(promise);
