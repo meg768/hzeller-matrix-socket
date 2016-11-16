@@ -141,13 +141,10 @@ var App = function(argv) {
 		if (options.priority == 'low' && _matrix.isRunning())
 			return;
 
-		if (options.priority == 'high') {
-			_queue.clear();
-			_matrix.stop();
-		}
+		var enqueue = options.priority == 'high' ? _queue.prequeue : _queue.enqueue;
 
 		if (_queue.isEmpty()) {
-			_queue.enqueue(promise);
+			enqueue(promise);
 
 			_queue.dequeue().then(function() {
 				_io.emit('idle');
@@ -160,7 +157,7 @@ var App = function(argv) {
 
 		}
 		else {
-			_queue.enqueue(promise);
+			enqueue(promise);
 		}
 
 	}
