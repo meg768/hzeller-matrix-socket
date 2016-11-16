@@ -23,6 +23,7 @@ var App = function(argv) {
 	var _io      = undefined;
 	var _server  = undefined;
 	var _promise = undefined;
+	var _noEmit  = false;
 
 	var argv = parseArgs();
 
@@ -134,30 +135,42 @@ var App = function(argv) {
 
 	function enqueue(promise, options) {
 
-
 		if (options == undefined)
 			options = {};
 
 		if (options.priority == 'low' && _matrix.isRunning())
 			return;
 
-		var enqueue = options.priority == 'high' ? _queue.prequeue : _queue.enqueue;
+		function enqueue() {
+			if (options.priority == '!') {
+				_queue.setQueue([promise]);
+			}
+			else if (options.priority == 'high')
+				_queue.prequeue(promise);
+			}
+			else {
+				_queue.enqueue(promise);
+			}
+		}
 
-		if (_queue.isEmpty()) {
-			enqueue(promise);
-
+		function dequeue() {
 			_queue.dequeue().then(function() {
 				_io.emit('idle');
 
-			}).catch(function(error) {
+			})
+			.catch(function(error) {
 				console.log(error.stack);
 				_io.emit('idle');
-
 			});
 
 		}
+
+		if (_queue.isEmpty()) {
+			enqueue();
+			dequeue();
+		}
 		else {
-			enqueue(promise);
+			enqueue();
 		}
 
 	}
@@ -251,6 +264,11 @@ var App = function(argv) {
 
 				socket.on('disconnect', function() {
 					console.log('Disconnected from', socket.id);
+				});
+
+				socket.on('cancel', function() {
+					_queue.clear();
+					_matrix.stop();
 				});
 
 				socket.on('stop', function() {
