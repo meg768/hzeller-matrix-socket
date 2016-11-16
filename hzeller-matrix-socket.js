@@ -145,7 +145,7 @@ var App = function(argv) {
 			if (options.priority == '!') {
 				_queue.setQueue([promise]);
 			}
-			else if (options.priority == 'high')
+			else if (options.priority == 'high') {
 				_queue.prequeue(promise);
 			}
 			else {
