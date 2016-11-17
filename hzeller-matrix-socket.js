@@ -1,16 +1,15 @@
 #!/usr/bin/env node
 
-var fs = require('fs');
-var Path = require('path');
-var mkpath = require('yow').mkpath;
-var random = require('yow').random;
-var sprintf = require('yow').sprintf;
-var isObject = require('yow').isObject;
-var isString = require('yow').isString;
-var redirectLogs = require('yow').redirectLogs;
-var prefixLogs = require('yow').prefixLogs;
-var Queue = require('yow/queue');
-var Matrix = require('hzeller-matrix');
+var fs       = require('fs');
+var Path     = require('path');
+var mkpath   = require('yow/fs').mkpath;
+var random   = require('yow/random');
+var sprintf  = require('yow/sprintf');
+var isObject = require('yow/is').isObject;
+var isString = require('yow/is').isString;
+var logs     = require('yow/logs');
+var Queue    = require('yow/queue');
+var Matrix   = require('hzeller-matrix');
 
 
 
