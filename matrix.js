@@ -236,13 +236,13 @@ var App = function(argv) {
 
 	function run() {
 
-		prefixLogs();
+		logs.prefix();
 
 		if (argv.log) {
 			var parts = Path.parse(__filename);
 			var logFile = Path.join(parts.dir, parts.name + '.log');
 
-			redirectLogs(logFile);
+			logs.redirect(logFile);
 		}
 
 		_matrix = new Matrix(argv.dryRun ? {hardware:'none'} : {width:argv.width, height:argv.height});
