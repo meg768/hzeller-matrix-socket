@@ -5,11 +5,11 @@
   "main": "matrix.js",
   "dependencies": {
     "commander": "^2.9.0",
-    "hzeller-matrix": "^1.0.33",
+    "hzeller-matrix": "^1.0.73",
     "socket.io": "^1.5.1",
     "socket.io-client": "^1.5.1",
-    "yargs": "^6.3.0",
-    "yow": "^1.0.15"
+    "yargs": "^6.4.0",
+    "yow": "^1.0.39"
   },
   "devDependencies": {},
   "scripts": {
