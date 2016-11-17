@@ -1,8 +1,8 @@
 {
-  "name": "hzeller-matrix-socket",
+  "name": "matrix",
   "version": "1.0.0",
   "description": "",
-  "main": "hzeller-matrix-socket.js",
+  "main": "matrix.js",
   "dependencies": {
     "commander": "^2.9.0",
     "hzeller-matrix": "^1.0.33",
@@ -17,12 +17,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/meg768/hzeller-matrix-socket.git"
+    "url": "git+https://github.com/meg768/matrix.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/meg768/hzeller-matrix-socket/issues"
+    "url": "https://github.com/meg768/matrix/issues"
   },
-  "homepage": "https://github.com/meg768/hzeller-matrix-socket#readme"
+  "homepage": "https://github.com/meg768/matrixt#readme"
 }
