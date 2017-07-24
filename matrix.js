@@ -210,6 +210,8 @@ var App = function(argv) {
 
 
 		_matrix = new Matrix({width:argv.width, height:argv.height});
+
+
 		var socket = require('socket.io-client')('http://app-o.se/services');
 
 
