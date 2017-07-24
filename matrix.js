@@ -209,7 +209,7 @@ var App = function(argv) {
 		logs.prefix();
 
 
-		_matrix = new Matrix(argv.dryRun ? {hardware:'none'} : {width:argv.width, height:argv.height});
+		_matrix = new Matrix({width:argv.width, height:argv.height});
 		_socket = require('socket.io-client')('http://app-o.se/services');
 
 		var socket = _socket;
