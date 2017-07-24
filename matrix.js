@@ -224,7 +224,7 @@ var App = function(argv) {
 			});
 
 			_socket.on('disconnect', function() {
-				console.log('Disconnected from', socket.id);
+				console.log('Disconnected from', _socket.id);
 			});
 
 			_socket.on('cancel', function(options, fn) {
