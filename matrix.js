@@ -243,7 +243,7 @@ var App = function(argv) {
 			console.log('Started', new Date());
 
 			socket.on('connect', function() {
-				console.log('Connect', socket.id);
+				console.log('Connected to socket server!');
 
 				socket.emit('service', 'hzeller-matrix-64x32', ['cancel', 'clear', 'stop', 'text', 'animation', 'emoji', 'rain', 'perlin', 'hello'], {timeout:5000});
 			});
