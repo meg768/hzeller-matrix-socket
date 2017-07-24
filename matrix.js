@@ -210,9 +210,8 @@ var App = function(argv) {
 
 
 		_matrix = new Matrix({width:argv.width, height:argv.height});
-		_socket = require('socket.io-client')('http://app-o.se/services');
+		var socket = require('socket.io-client')('http://app-o.se/services');
 
-		var socket = _socket;
 
 		displayIP().then(function() {
 
