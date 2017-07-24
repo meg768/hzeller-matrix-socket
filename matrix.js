@@ -252,13 +252,13 @@ var App = function(argv) {
 				console.log('Disconnected from', socket.id);
 			});
 
-			socket.on('cancel', function(params, fn) {
+			socket.on('cancel', function(options, fn) {
 				_queue.clear();
 				_matrix.stop();
 				fn({status:'OK'});
 			});
 
-			socket.on('stop', function(params, fn) {
+			socket.on('stop', function(options, fn) {
 				_queue.clear();
 				_matrix.stop();
 				fn({status:'OK'});
