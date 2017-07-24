@@ -19,6 +19,10 @@ var App = function(argv) {
 	var _this    = this;
 	var _queue   = new Queue(50);
 	var _matrix  = undefined;
+	var _io      = undefined;
+	var _server  = undefined;
+	var _promise = undefined;
+	var _noEmit  = false;
 
 	var argv = parseArgs();
 
@@ -205,7 +209,9 @@ var App = function(argv) {
 	}
 
 	function runDry() {
-		var socket = require('socket.io-client/hzeller-matrix');
+		var io = require('socket.io-client');
+		var socket = io(sprintf('http://localhost:%d/hzeller-matrix', argv.port));
+
 
 		socket.on('connect', function() {
 			console.log('Connected.');
@@ -232,67 +238,69 @@ var App = function(argv) {
 
 		logs.prefix();
 
+		if (argv.log) {
+			var parts = Path.parse(__filename);
+			var logFile = Path.join(parts.dir, parts.name + '.log');
+
+			logs.redirect(logFile);
+		}
 
 		_matrix = new Matrix(argv.dryRun ? {hardware:'none'} : {width:argv.width, height:argv.height});
-
-		var socket = require('socket.io-client')('http://app-o.se/services');
+		_server = require('http').createServer(function(){});
+		_io     = require('socket.io')(_server).of('/hzeller-matrix');
 
 
 		displayIP().then(function() {
 
 			console.log('Started', new Date());
 
-			socket.on('connect', function() {
-				console.log('Connect', socket.id);
-
-				socket.emit('service', 'hzeller-matrix', ['cancel', 'clear', 'stop', 'text', 'animation', 'emoji', 'rain', 'perlin', 'hello'], {timeout:5000});
+			_server.listen(argv.port, function() {
+				console.log('Listening on port', argv.port, '...');
 			});
 
-			socket.on('disconnect', function() {
-				console.log('Disconnected from', socket.id);
-			});
+			_io.on('connection', function(socket) {
 
-			socket.on('cancel', function(params, fn) {
-				_queue.clear();
-				_matrix.stop();
-				fn({status:'OK'});
-			});
+				console.log('Connection from', socket.id);
 
-			socket.on('stop', function(params, fn) {
-				_queue.clear();
-				_matrix.stop();
-				fn({status:'OK'});
-			});
+				socket.on('disconnect', function() {
+					console.log('Disconnected from', socket.id);
+				});
 
-			socket.on('text', function(options, fn) {
-				enqueue(runText.bind(_this, options), options);
-				fn({status:'OK'});
-			});
+				socket.on('cancel', function() {
+					_queue.clear();
+					_matrix.stop();
+				});
 
-			socket.on('animation', function(options, fn) {
-				enqueue(runAnimation.bind(_this, options), options);
-				fn({status:'OK'});
-			});
+				socket.on('stop', function() {
+					_queue.clear();
+					_matrix.stop();
+				});
 
-			socket.on('emoji', function(options, fn) {
-				enqueue(runEmoji.bind(_this, options), options);
-				fn({status:'OK'});
-			});
+				socket.on('text', function(options) {
+					enqueue(runText.bind(_this, options), options);
+				});
 
-			socket.on('rain', function(options, fn) {
-				enqueue(runRain.bind(_this, options), options);
-				fn({status:'OK'});
-			});
+				socket.on('animation', function(options) {
+					enqueue(runAnimation.bind(_this, options), options);
+				});
 
-			socket.on('perlin', function(options, fn) {
-				enqueue(runPerlin.bind(_this, options), options);
-				fn({status:'OK'});
-			});
+				socket.on('emoji', function(options) {
+					enqueue(runEmoji.bind(_this, options), options);
+				});
 
-			socket.on('hello', function(options, fn) {
-				console.log('hello');
-				fn({status:'OK'});
-			})
+				socket.on('rain', function(options) {
+					enqueue(runRain.bind(_this, options), options);
+				});
+
+				socket.on('perlin', function(options) {
+					enqueue(runPerlin.bind(_this, options), options);
+				});
+
+				socket.on('hello', function(data) {
+					console.log('hello');
+				})
+
+			});
 
 			if (argv.dryRun)
 				runDry();
