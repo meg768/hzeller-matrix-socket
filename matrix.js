@@ -19,6 +19,7 @@ var App = function(argv) {
 	var _this    = this;
 	var _queue   = new Queue(50);
 	var _matrix  = undefined;
+	var _socket  = undefined;
 
 	var argv = parseArgs();
 
@@ -151,12 +152,12 @@ var App = function(argv) {
 
 		function dequeue() {
 			_queue.dequeue().then(function() {
-				_io.emit('idle');
+				_socket.emit('idle');
 
 			})
 			.catch(function(error) {
 				console.log(error.stack);
-				_io.emit('idle');
+				_socket.emit('idle');
 			});
 
 		}
@@ -204,29 +205,6 @@ var App = function(argv) {
 
 	}
 
-	function runDry() {
-		var socket = require('socket.io-client/hzeller-matrix');
-
-		socket.on('connect', function() {
-			console.log('Connected.');
-
-			socket.emit(random(['text', 'animation', 'rain', 'perlin', 'emoji']));
-
-			socket.on('idle', function() {
-				var count = random(1, 4);
-
-				for (var i = 0; i < count; i++)
-					socket.emit(random(['text', 'animation', 'rain', 'perlin', 'emoji']));
-			});
-
-		});
-
-		socket.on('disconnect', function() {
-			console.log('Disconnected.');
-		});
-
-
-	};
 
 	function run() {
 
@@ -234,11 +212,11 @@ var App = function(argv) {
 
 
 		_matrix = new Matrix(argv.dryRun ? {hardware:'none'} : {width:argv.width, height:argv.height});
+		_socket = require('socket.io-client')('http://app-o.se/services');
 
-
+		var socket = _socket;
 
 		displayIP().then(function() {
-			var socket = require('socket.io-client')('http://app-o.se/services');
 
 			console.log('Started', new Date());
 
@@ -294,8 +272,6 @@ var App = function(argv) {
 				fn({status:'OK'});
 			})
 
-			if (argv.dryRun)
-				runDry();
 
 
 
