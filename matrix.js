@@ -19,7 +19,7 @@ var App = function(argv) {
 	var _this    = this;
 	var _queue   = new Queue(50);
 	var _matrix  = undefined;
-	var _socket  = undefined;
+	var _socket   = require('socket.io-client')('http://app-o.se/services');
 
 	var argv = parseArgs();
 
@@ -214,58 +214,57 @@ var App = function(argv) {
 
 		displayIP().then(function() {
 
-			var socket = require('socket.io-client')('http://app-o.se/services');
 
 			console.log('Started', new Date());
 
-			socket.on('connect', function() {
+			_socket.on('connect', function() {
 				console.log('Connected to socket server!');
 
-				socket.emit('service', argv.name, ['cancel', 'clear', 'stop', 'text', 'animation', 'emoji', 'rain', 'perlin', 'hello'], {timeout:5000});
+				_socket.emit('service', argv.name, ['cancel', 'clear', 'stop', 'text', 'animation', 'emoji', 'rain', 'perlin', 'hello'], {timeout:5000});
 			});
 
-			socket.on('disconnect', function() {
+			_socket.on('disconnect', function() {
 				console.log('Disconnected from', socket.id);
 			});
 
-			socket.on('cancel', function(options, fn) {
+			_socket.on('cancel', function(options, fn) {
 				_queue.clear();
 				_matrix.stop();
 				fn({status:'OK'});
 			});
 
-			socket.on('stop', function(options, fn) {
+			_socket.on('stop', function(options, fn) {
 				_queue.clear();
 				_matrix.stop();
 				fn({status:'OK'});
 			});
 
-			socket.on('text', function(options, fn) {
+			_socket.on('text', function(options, fn) {
 				enqueue(runText.bind(_this, options), options);
 				fn({status:'OK'});
 			});
 
-			socket.on('animation', function(options, fn) {
+			_socket.on('animation', function(options, fn) {
 				enqueue(runAnimation.bind(_this, options), options);
 				fn({status:'OK'});
 			});
 
-			socket.on('emoji', function(options, fn) {
+			_socket.on('emoji', function(options, fn) {
 				enqueue(runEmoji.bind(_this, options), options);
 				fn({status:'OK'});
 			});
 
-			socket.on('rain', function(options, fn) {
+			_socket.on('rain', function(options, fn) {
 				enqueue(runRain.bind(_this, options), options);
 				fn({status:'OK'});
 			});
 
-			socket.on('perlin', function(options, fn) {
+			_socket.on('perlin', function(options, fn) {
 				enqueue(runPerlin.bind(_this, options), options);
 				fn({status:'OK'});
 			});
 
-			socket.on('hello', function(options, fn) {
+			_socket.on('hello', function(options, fn) {
 				console.log('hello');
 				fn({status:'OK'});
 			})
