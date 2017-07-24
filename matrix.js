@@ -28,13 +28,11 @@ var App = function(argv) {
 		var args = require('yargs');
 
 		args.usage('Usage: $0 [options]');
-		args.help('h').alias('h', 'help');
+		args.help('help').alias('help', 'h');
 
-		args.option('l', {alias:'log',         describe:'Redirect logs to file'});
-		args.option('H', {alias:'height',      describe:'Height of RGB matrix', default:32});
-		args.option('W', {alias:'width',       describe:'Width of RGB matrix', default:32});
-		args.option('p', {alias:'port',        describe:'Listen to specified port', default:3003});
-		args.option('n', {alias:'dry-run',     describe:'Do not access hardware, just print'});
+		args.option('height', {alias:'h',      describe:'Height of RGB matrix', default:32});
+		args.option('width',  {alias:'w',      describe:'Width of RGB matrix', default:64});
+		args.option('name',  {alias:'n',      describe:'Name of service', default:'hzeller-matrix-64x32'});
 
 		args.wrap(null);
 
@@ -223,7 +221,7 @@ var App = function(argv) {
 			socket.on('connect', function() {
 				console.log('Connected to socket server!');
 
-				socket.emit('service', 'hzeller-matrix-64x32', ['cancel', 'clear', 'stop', 'text', 'animation', 'emoji', 'rain', 'perlin', 'hello'], {timeout:5000});
+				socket.emit('service', argv.name, ['cancel', 'clear', 'stop', 'text', 'animation', 'emoji', 'rain', 'perlin', 'hello'], {timeout:5000});
 			});
 
 			socket.on('disconnect', function() {
