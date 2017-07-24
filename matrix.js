@@ -235,10 +235,10 @@ var App = function(argv) {
 
 		_matrix = new Matrix(argv.dryRun ? {hardware:'none'} : {width:argv.width, height:argv.height});
 
-		var socket = require('socket.io-client')('http://app-o.se/services');
 
 
 		displayIP().then(function() {
+			var socket = require('socket.io-client')('http://app-o.se/services');
 
 			console.log('Started', new Date());
 
