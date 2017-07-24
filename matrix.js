@@ -245,7 +245,7 @@ var App = function(argv) {
 			socket.on('connect', function() {
 				console.log('Connect', socket.id);
 
-				socket.emit('service', 'hzeller-matrix', ['cancel', 'clear', 'stop', 'text', 'animation', 'emoji', 'rain', 'perlin', 'hello'], {timeout:5000});
+				socket.emit('service', 'hzeller-matrix-64x32', ['cancel', 'clear', 'stop', 'text', 'animation', 'emoji', 'rain', 'perlin', 'hello'], {timeout:5000});
 			});
 
 			socket.on('disconnect', function() {
