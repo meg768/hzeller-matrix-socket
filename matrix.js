@@ -151,12 +151,12 @@ var App = function(argv) {
 		function dequeue() {
 			_queue.dequeue().then(function() {
 				console.log('Entering idle mode');
-				_socket.emit('notify', 'idle', {});
+				_socket.emit('idle', {});
 
 			})
 			.catch(function(error) {
 				console.log(error.stack);
-				_socket.emit('notify', 'idle', {});
+				_socket.emit('idle', {});
 			});
 
 		}
@@ -218,14 +218,14 @@ var App = function(argv) {
 
 			console.log('Started', new Date());
 
-			_socket = require('socket.io-client')('http://app-o.se/services');
+			_socket = require('socket.io-client')('http://app-o.se/' + argv.name);
 
 			_socket.on('connect', function() {
 				console.log('Connected to socket server!');
 
 				runEmoji();
 
-				_socket.emit('service', argv.name, ['cancel', 'clear', 'stop', 'text', 'animation', 'emoji', 'rain', 'perlin', 'hello'], {timeout:5000});
+				//_socket.emit('service', argv.name, ['cancel', 'clear', 'stop', 'text', 'animation', 'emoji', 'rain', 'perlin', 'hello'], {timeout:5000});
 			});
 
 			_socket.on('disconnect', function() {
