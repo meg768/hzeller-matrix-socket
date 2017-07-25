@@ -32,7 +32,7 @@ var App = function(argv) {
 
 		args.option('height', {alias:'H',      describe:'Height of RGB matrix', default:32});
 		args.option('width',  {alias:'W',      describe:'Width of RGB matrix', default:64});
-		args.option('name',  {alias:'n',      describe:'Name of service', default:'hzeller-matrix-64x32'});
+		args.option('service',  {alias:'s',      describe:'Name of service', default:'hzeller-matrix-32x32'});
 
 		args.wrap(null);
 
