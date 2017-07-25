@@ -19,7 +19,7 @@ var App = function(argv) {
 	var _this    = this;
 	var _queue   = new Queue(50);
 	var _matrix  = undefined;
-	var _socket   = require('socket.io-client')('http://app-o.se/services');
+	var _socket  = undefined;
 
 	var argv = parseArgs();
 
@@ -217,6 +217,8 @@ var App = function(argv) {
 
 
 			console.log('Started', new Date());
+
+			_socket = require('socket.io-client')('http://app-o.se/services');
 
 			_socket.on('connect', function() {
 				console.log('Connected to socket server!');
