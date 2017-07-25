@@ -150,6 +150,7 @@ var App = function(argv) {
 
 		function dequeue() {
 			_queue.dequeue().then(function() {
+				console.log('Entering idle mode');
 				_socket.emit('idle', {});
 
 			})
