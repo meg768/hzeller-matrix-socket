@@ -150,12 +150,12 @@ var App = function(argv) {
 
 		function dequeue() {
 			_queue.dequeue().then(function() {
-				_socket.emit('idle');
+				_socket.emit('idle', {});
 
 			})
 			.catch(function(error) {
 				console.log(error.stack);
-				_socket.emit('idle');
+				_socket.emit('idle', {});
 			});
 
 		}
@@ -219,7 +219,7 @@ var App = function(argv) {
 
 			_socket.on('connect', function() {
 				console.log('Connected to socket server!');
-				
+
 				runEmoji();
 
 				_socket.emit('service', argv.name, ['cancel', 'clear', 'stop', 'text', 'animation', 'emoji', 'rain', 'perlin', 'hello'], {timeout:5000});
