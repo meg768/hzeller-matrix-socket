@@ -226,6 +226,7 @@ var App = function(argv) {
 				runEmoji();
 
 				//_socket.emit('service', argv.name, ['cancel', 'clear', 'stop', 'text', 'animation', 'emoji', 'rain', 'perlin', 'hello'], {timeout:5000});
+				_socket.emit('i-am-the-provider');
 			});
 
 			_socket.on('disconnect', function() {
