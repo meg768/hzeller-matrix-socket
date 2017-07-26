@@ -81,24 +81,31 @@ var App = function(argv) {
 
 		return new Promise(function(resolve, reject) {
 
-			options = options || {};
+			try {
+				options = options || {};
 
-			options.fileName = options.name;
+				options.fileName = options.name;
 
-			// Generate a random one if not specified
-			if (options.fileName == undefined) {
-				var files = fs.readdirSync(sprintf('%s/animations/%dx%d', __dirname, argv.width, argv.height));
-				options.fileName = random(files);
+				// Generate a random one if not specified
+				if (options.fileName == undefined) {
+					var files = fs.readdirSync(sprintf('%s/animations/%dx%d', __dirname, argv.width, argv.height));
+					options.fileName = random(files);
+				}
+				else {
+					options.fileName = sprintf('%s.gif', options.fileName);
+				}
+
+				// Add path
+				options.fileName = sprintf('%s/animations/%dx%d/%s', __dirname, argv.width, argv.height, options.fileName);
+
+				console.log('runImage:', JSON.stringify(options));
+				_matrix.runAnimation(options.fileName, options, resolve);
+
 			}
-			else {
-				options.fileName = sprintf('%s.gif', options.fileName);
+			catch(error) {
+				reject(error);
+
 			}
-
-			// Add path
-			options.fileName = sprintf('%s/animations/%dx%d/%s', __dirname, argv.width, argv.height, options.fileName);
-
-			console.log('runImage:', JSON.stringify(options));
-			_matrix.runAnimation(options.fileName, options, resolve);
 		});
 
 	}
