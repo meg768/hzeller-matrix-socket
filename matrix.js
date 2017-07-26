@@ -69,7 +69,7 @@ var App = function(argv) {
 			if (!options.id || options.id < 1 || options.id > 846)
 				options.id = 704;
 
-			options.image = sprintf('%s/images/emojis/%d.png', __dirname, options.id);
+			options.image = sprintf('%s/images/emojis/%dx%d/%d.png', __dirname, argv.width, argv.height, options.id);
 
 			console.log('runImage:', JSON.stringify(options));
 			_matrix.runImage(options.image, options, resolve);
@@ -87,7 +87,7 @@ var App = function(argv) {
 
 			// Generate a random one if not specified
 			if (options.fileName == undefined) {
-				var files = fs.readdirSync(sprintf('%s/animations', __dirname));
+				var files = fs.readdirSync(sprintf('%s/animations/%dx%d', __dirname, argv.width, argv.height));
 				options.fileName = random(files);
 			}
 			else {
@@ -95,7 +95,7 @@ var App = function(argv) {
 			}
 
 			// Add path
-			options.fileName = sprintf('%s/animations/%s', __dirname, options.fileName);
+			options.fileName = sprintf('%s/animations/%dx%d/%s', __dirname, argv.width, argv.height, options.fileName);
 
 			console.log('runImage:', JSON.stringify(options));
 			_matrix.runAnimation(options.fileName, options, resolve);
