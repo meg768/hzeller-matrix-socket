@@ -69,7 +69,7 @@ var App = function(argv) {
 			if (!options.id || options.id < 1 || options.id > 846)
 				options.id = 704;
 
-			options.image = sprintf('%s/images/emojis/%dx%d/%d.png', __dirname, argv.width, argv.height, options.id);
+			options.image = sprintf('%s/images/%dx%d/emojis/%d.png', __dirname, argv.height, argv.height, options.id);
 
 			console.log('runImage:', JSON.stringify(options));
 			_matrix.runImage(options.image, options, resolve);
