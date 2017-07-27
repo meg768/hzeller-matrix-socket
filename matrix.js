@@ -122,6 +122,18 @@ var App = function(argv) {
 
 	}
 
+	function runClock(options) {
+
+		return new Promise(function(resolve, reject) {
+
+			options = options || {};
+
+			console.log('runClock:', JSON.stringify(options));
+			_matrix.runClock(options, resolve);
+		});
+
+	}
+
 	function runPerlin(options) {
 
 		return new Promise(function(resolve, reject) {
