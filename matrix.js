@@ -128,8 +128,22 @@ var App = function(argv) {
 
 			options = options || {};
 
+			options.fileName = options.name;
+
+			// Generate a random one if not specified
+			if (options.fileName == undefined) {
+				var files = fs.readdirSync(sprintf('%s/images/%dx%d/clocks', __dirname, argv.width, argv.height));
+				options.fileName = random(files);
+			}
+			else {
+				options.fileName = sprintf('%s.png', options.fileName);
+			}
+
+			// Add path
+			options.fileName = sprintf('%s/images/%dx%d/clocks/%s', __dirname, argv.width, argv.height, options.fileName);
+
 			console.log('runClock:', JSON.stringify(options));
-			_matrix.runClock(options, resolve);
+			_matrix.runClock(options.fileName, options, resolve);
 		});
 
 	}
