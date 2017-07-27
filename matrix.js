@@ -288,6 +288,11 @@ var App = function(argv) {
 				fn({status:'OK'});
 			});
 
+			_socket.on('clock', function(options, fn) {
+				enqueue(runClock.bind(_this, options), options);
+				fn({status:'OK'});
+			});
+
 			_socket.on('emoji', function(options, fn) {
 				enqueue(runEmoji.bind(_this, options), options);
 				fn({status:'OK'});
@@ -302,6 +307,7 @@ var App = function(argv) {
 				enqueue(runPerlin.bind(_this, options), options);
 				fn({status:'OK'});
 			});
+
 
 			_socket.on('hello', function(options, fn) {
 				console.log('hello');
