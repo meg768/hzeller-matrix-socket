@@ -279,32 +279,32 @@ var App = function(argv) {
 			});
 
 			_socket.on('text', function(options, fn) {
-				enqueue(runText.bind(_this, options), options);
+				enqueue(runText(options), options);
 				fn({status:'OK'});
 			});
 
 			_socket.on('animation', function(options, fn) {
-				enqueue(runAnimation.bind(_this, options), options);
+				enqueue(runAnimation(options), options);
 				fn({status:'OK'});
 			});
 
 			_socket.on('clock', function(options, fn) {
-				enqueue(runClock.bind(_this, options), options);
+				enqueue(runClock(options), options);
 				fn({status:'OK'});
 			});
 
 			_socket.on('emoji', function(options, fn) {
-				enqueue(runEmoji.bind(_this, options), options);
+				enqueue(runEmoji(options), options);
 				fn({status:'OK'});
 			});
 
 			_socket.on('rain', function(options, fn) {
-				enqueue(runRain.bind(_this, options), options);
+				enqueue(runRain(options), options);
 				fn({status:'OK'});
 			});
 
 			_socket.on('perlin', function(options, fn) {
-				enqueue(runPerlin.bind(_this, options), options);
+				enqueue(runPerlin(options), options);
 				fn({status:'OK'});
 			});
 
