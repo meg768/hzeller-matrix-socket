@@ -256,9 +256,8 @@ var App = function(argv) {
 			_socket.on('connect', function() {
 				console.log('Connected to socket server!');
 
-				runEmoji();
+				enqueue(runEmoji.bind(_this, {}}));
 
-				//_socket.emit('service', argv.name, ['cancel', 'clear', 'stop', 'text', 'animation', 'emoji', 'rain', 'perlin', 'hello'], {timeout:5000});
 				_socket.emit('i-am-the-provider');
 			});
 
