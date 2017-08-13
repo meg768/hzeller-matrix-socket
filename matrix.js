@@ -256,7 +256,7 @@ var App = function(argv) {
 			_socket.on('connect', function() {
 				console.log('Connected to socket server!');
 
-				enqueue(runEmoji.bind(_this, {}}));
+				enqueue(runEmoji);
 
 				_socket.emit('i-am-the-provider');
 			});
