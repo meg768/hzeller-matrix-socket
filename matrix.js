@@ -44,123 +44,8 @@ var App = function(argv) {
 	}
 
 
-	function runText(options) {
 
-
-		return new Promise(function(resolve, reject) {
-
-			options = options || {};
-
-			if (options.fontName)
-				options.fontName = sprintf('%s/fonts/%s.ttf', __dirname, options.fontName);
-
-			console.log('runText:', JSON.stringify(options));
-			_matrix.runText(options.text, options, resolve);
-		});
-
-	}
-
-	function runEmoji(options) {
-
-		return new Promise(function(resolve, reject) {
-
-			options = options || {};
-
-			if (!options.id || options.id < 1 || options.id > 846)
-				options.id = 704;
-
-			options.image = sprintf('%s/images/%dx%d/emojis/%d.png', __dirname, argv.height, argv.height, options.id);
-
-			console.log('runImage:', JSON.stringify(options));
-			_matrix.runImage(options.image, options, resolve);
-		});
-
-	}
-
-	function runAnimation(options) {
-
-		return new Promise(function(resolve, reject) {
-
-			try {
-				options = options || {};
-
-				options.fileName = options.name;
-
-				// Generate a random one if not specified
-				if (options.fileName == undefined) {
-					var files = fs.readdirSync(sprintf('%s/animations/%dx%d', __dirname, argv.width, argv.height));
-					options.fileName = random(files);
-				}
-				else {
-					options.fileName = sprintf('%s.gif', options.fileName);
-				}
-
-				// Add path
-				options.fileName = sprintf('%s/animations/%dx%d/%s', __dirname, argv.width, argv.height, options.fileName);
-
-				console.log('runImage:', JSON.stringify(options));
-				_matrix.runAnimation(options.fileName, options, resolve);
-
-			}
-			catch(error) {
-				reject(error);
-
-			}
-		});
-
-	}
-
-	function runRain(options) {
-
-		return new Promise(function(resolve, reject) {
-
-			options = options || {};
-
-			console.log('runRain:', JSON.stringify(options));
-			_matrix.runRain(options, resolve);
-		});
-
-	}
-
-	function runClock(options) {
-
-		return new Promise(function(resolve, reject) {
-
-			options = options || {};
-
-			options.fileName = options.name;
-
-			// Generate a random one if not specified
-			if (options.fileName == undefined) {
-				var files = fs.readdirSync(sprintf('%s/images/%dx%d/clocks', __dirname, argv.width, argv.height));
-				options.fileName = random(files);
-			}
-			else {
-				options.fileName = sprintf('%s.png', options.fileName);
-			}
-
-			// Add path
-			options.fileName = sprintf('%s/images/%dx%d/clocks/%s', __dirname, argv.width, argv.height, options.fileName);
-
-			console.log('runClock:', JSON.stringify(options));
-			_matrix.runClock(options.fileName, options, resolve);
-		});
-
-	}
-
-	function runPerlin(options) {
-
-		return new Promise(function(resolve, reject) {
-
-			options = options || {};
-
-			console.log('runPerlin:', JSON.stringify(options));
-			_matrix.runPerlin(options, resolve);
-		});
-
-	}
-
-	function enqueue(promise, options) {
+	function enqueue(options, fn) {
 
 		if (options == undefined)
 			options = {};
@@ -170,14 +55,14 @@ var App = function(argv) {
 
 		function enqueue() {
 			if (options.priority == '!') {
-				_queue.queue([promise]);
+				_queue.queue([fn]);
 				_matrix.stop();
 			}
 			else if (options.priority == 'high') {
-				_queue.prequeue(promise);
+				_queue.prequeue(fn);
 			}
 			else {
-				_queue.enqueue(promise);
+				_queue.enqueue(fn);
 			}
 		}
 
@@ -256,7 +141,22 @@ var App = function(argv) {
 			_socket.on('connect', function() {
 				console.log('Connected to socket server!');
 
-				enqueue(runEmoji);
+				var options = {
+					id:704
+				};
+
+				enqueue(options, function() {
+					return new Promise(function(resolve, reject) {
+
+						if (!options.id || options.id < 1 || options.id > 846)
+							options.id = 704;
+
+						options.image = sprintf('%s/images/%dx%d/emojis/%d.png', __dirname, argv.height, argv.height, options.id);
+
+						console.log('runImage:', JSON.stringify(options));
+						_matrix.runImage(options.image, options, resolve);
+					});
+				});
 
 				_socket.emit('i-am-the-provider');
 			});
@@ -278,32 +178,131 @@ var App = function(argv) {
 			});
 
 			_socket.on('text', function(options, fn) {
-				enqueue(runText.bind(_this, options), options);
+				options = options || {};
+
+				enqueue(options, function() {
+					return new Promise(function(resolve, reject) {
+
+						if (options.fontName)
+							options.fontName = sprintf('%s/fonts/%s.ttf', __dirname, options.fontName);
+
+						console.log('runText:', JSON.stringify(options));
+						_matrix.runText(options.text, options, resolve);
+					});
+				})
+
 				fn({status:'OK'});
 			});
 
 			_socket.on('animation', function(options, fn) {
-				enqueue(runAnimation.bind(_this, options), options);
+				options = options || {};
+
+				enqueue(options, function() {
+					return new Promise(function(resolve, reject) {
+
+						try {
+							options = options || {};
+
+							options.fileName = options.name;
+
+							// Generate a random one if not specified
+							if (options.fileName == undefined) {
+								var files = fs.readdirSync(sprintf('%s/animations/%dx%d', __dirname, argv.width, argv.height));
+								options.fileName = random(files);
+							}
+							else {
+								options.fileName = sprintf('%s.gif', options.fileName);
+							}
+
+							// Add path
+							options.fileName = sprintf('%s/animations/%dx%d/%s', __dirname, argv.width, argv.height, options.fileName);
+
+							console.log('runImage:', JSON.stringify(options));
+							_matrix.runAnimation(options.fileName, options, resolve);
+
+						}
+						catch(error) {
+							reject(error);
+
+						}
+					});
+				});
+
 				fn({status:'OK'});
 			});
 
 			_socket.on('clock', function(options, fn) {
-				enqueue(runClock.bind(_this, options), options);
+				options = options || {};
+
+				enqueue(options, function() {
+					return new Promise(function(resolve, reject) {
+
+						options.fileName = options.name;
+
+						// Generate a random one if not specified
+						if (options.fileName == undefined) {
+							var files = fs.readdirSync(sprintf('%s/images/%dx%d/clocks', __dirname, argv.width, argv.height));
+							options.fileName = random(files);
+						}
+						else {
+							options.fileName = sprintf('%s.png', options.fileName);
+						}
+
+						// Add path
+						options.fileName = sprintf('%s/images/%dx%d/clocks/%s', __dirname, argv.width, argv.height, options.fileName);
+
+						console.log('runClock:', JSON.stringify(options));
+						_matrix.runClock(options.fileName, options, resolve);
+					});
+				});
+
 				fn({status:'OK'});
 			});
 
 			_socket.on('emoji', function(options, fn) {
-				enqueue(runEmoji.bind(_this, options), options);
+				options = options || {};
+
+				enqueue(options, function() {
+					return new Promise(function(resolve, reject) {
+
+						if (!options.id || options.id < 1 || options.id > 846)
+							options.id = 704;
+
+						options.image = sprintf('%s/images/%dx%d/emojis/%d.png', __dirname, argv.height, argv.height, options.id);
+
+						console.log('runImage:', JSON.stringify(options));
+						_matrix.runImage(options.image, options, resolve);
+					});
+				});
+
 				fn({status:'OK'});
 			});
 
 			_socket.on('rain', function(options, fn) {
-				enqueue(runRain.bind(_this, options), options);
+				options = options || {};
+
+				enqueue(options, function() {
+					return new Promise(function(resolve, reject) {
+						console.log('runRain:', JSON.stringify(options));
+						_matrix.runRain(options, resolve);
+					});
+
+				});
+
 				fn({status:'OK'});
 			});
 
 			_socket.on('perlin', function(options, fn) {
-				enqueue(runPerlin.bind(_this, options), options);
+				options = options || {};
+
+				enqueue(options, function() {
+					return new Promise(function(resolve, reject) {
+						console.log('runPerlin:', JSON.stringify(options));
+						_matrix.runPerlin(options, resolve);
+					});
+
+				});
+
 				fn({status:'OK'});
 			});
 
