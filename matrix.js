@@ -159,11 +159,11 @@ var App = function(argv) {
 				promise.then(function() {
 					return dequeue();
 				})
-				.then(function() {
-					resolve();
-				})
 				.catch(function(error) {
 					console.log(error);
+				})
+				.then(function() {
+					resolve();
 				})
 				.then(function() {
 					debug('Entering idle mode...');
