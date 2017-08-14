@@ -17,11 +17,13 @@ var App = function(argv) {
 	var _matrix  = undefined;
 	var _socket  = undefined;
 	var _busy    = false;
+	var _debug   = true;
 
 	var argv = parseArgs();
 
 	function debug() {
-		console.log.apply(this, arguments);
+		if (_debug)
+			console.log.apply(this, arguments);
 	}
 
 
@@ -78,7 +80,7 @@ var App = function(argv) {
 				// Add path
 				options.fileName = sprintf('%s/animations/%dx%d/%s', __dirname, argv.width, argv.height, options.fileName);
 
-				debug('runImage:', JSON.stringify(options));
+				debug('runAnimation:', JSON.stringify(options));
 				_matrix.runAnimation(options.fileName, options, resolve);
 
 			}
@@ -114,21 +116,6 @@ var App = function(argv) {
 
 	}
 
-	function runImage(options) {
-
-		return new Promise(function(resolve, reject) {
-
-
-			if (!options.id || options.id < 1 || options.id > 846)
-				options.id = 704;
-
-			options.image = sprintf('%s/images/%dx%d/emojis/%d.png', __dirname, argv.height, argv.height, options.id);
-
-			debug('runImage:', JSON.stringify(options));
-			_matrix.runImage(options.image, options, resolve);
-		});
-
-	}
 
 	function runEmoji(options) {
 		return new Promise(function(resolve, reject) {
@@ -167,7 +154,6 @@ var App = function(argv) {
 				var message = _queue.splice(0, 1)[0];
 
 				message.method(message.options == undefined ? {} : message.options).then(function() {
-					debug('Dequeueing...');
 					return dequeue();
 				})
 				.then(function() {
@@ -177,10 +163,9 @@ var App = function(argv) {
 					reject(error);
 				})
 				.then(function() {
-					debug('Entering idle mode');
+					debug('Entering idle mode...');
 					_socket.emit('idle', {});
 
-					
 					_busy = false;
 				});
 			}
@@ -220,9 +205,7 @@ var App = function(argv) {
 		})
 		.catch(function(error) {
 
-		}).then(function() {
-		})
-
+		});
 
 
 	}
@@ -270,7 +253,6 @@ var App = function(argv) {
 
 
 		displayIP().then(function() {
-
 
 			console.log('Started', new Date());
 
