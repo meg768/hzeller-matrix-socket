@@ -157,17 +157,16 @@ var App = function(argv) {
 					return dequeue();
 				})
 				.then(function() {
-					_busy = false;
-					resolve();
 				})
 				.catch(function(error) {
-					_busy = false;
-					reject(error);
+					console.log(error);
 				})
 				.then(function() {
+					_busy = false;
 					debug('Entering idle mode...');
 					_socket.emit('idle', {});
 
+					resolve();
 				});
 			}
 			else {
