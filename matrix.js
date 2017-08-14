@@ -152,21 +152,22 @@ var App = function(argv) {
 				_busy = true;
 
 				var message = _queue.splice(0, 1)[0];
+				var promise = message.method(message.options == undefined ? {} : message.options);
 
-				message.method(message.options == undefined ? {} : message.options).then(function() {
+				_busy = false;
+
+				promise.then(function() {
 					return dequeue();
 				})
 				.then(function() {
+					resolve();
 				})
 				.catch(function(error) {
 					console.log(error);
 				})
 				.then(function() {
-					_busy = false;
 					debug('Entering idle mode...');
 					_socket.emit('idle', {});
-
-					resolve();
 				});
 			}
 			else {
