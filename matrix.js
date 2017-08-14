@@ -2,15 +2,12 @@
 
 var fs       = require('fs');
 var Path     = require('path');
-var mkpath   = require('yow/fs').mkpath;
 var random   = require('yow/random');
 var sprintf  = require('yow/sprintf');
 var isObject = require('yow/is').isObject;
 var isString = require('yow/is').isString;
 var logs     = require('yow/logs');
 var Matrix   = require('hzeller-matrix');
-
-
 
 
 var App = function(argv) {
@@ -22,6 +19,11 @@ var App = function(argv) {
 	var _busy    = false;
 
 	var argv = parseArgs();
+
+	function debug() {
+		console.log.apply(this, arguments);
+	}
+
 
 	function parseArgs() {
 
@@ -46,13 +48,13 @@ var App = function(argv) {
 
 	function runRain(options) {
 		return new Promise(function(resolve, reject) {
-			console.log('runRain:', JSON.stringify(options));
+			debug('runRain:', JSON.stringify(options));
 			_matrix.runRain(options, resolve);
 		});
 	}
 	function runPerlin(options) {
 		return new Promise(function(resolve, reject) {
-			console.log('runPerlin:', JSON.stringify(options));
+			debug('runPerlin:', JSON.stringify(options));
 			_matrix.runPerlin(options, resolve);
 		});
 
@@ -76,7 +78,7 @@ var App = function(argv) {
 				// Add path
 				options.fileName = sprintf('%s/animations/%dx%d/%s', __dirname, argv.width, argv.height, options.fileName);
 
-				console.log('runImage:', JSON.stringify(options));
+				debug('runImage:', JSON.stringify(options));
 				_matrix.runAnimation(options.fileName, options, resolve);
 
 			}
@@ -106,7 +108,7 @@ var App = function(argv) {
 			// Add path
 			options.fileName = sprintf('%s/images/%dx%d/clocks/%s', __dirname, argv.width, argv.height, options.fileName);
 
-			console.log('runClock:', JSON.stringify(options));
+			debug('runClock:', JSON.stringify(options));
 			_matrix.runClock(options.fileName, options, resolve);
 		});
 
@@ -122,7 +124,7 @@ var App = function(argv) {
 
 			options.image = sprintf('%s/images/%dx%d/emojis/%d.png', __dirname, argv.height, argv.height, options.id);
 
-			console.log('runImage:', JSON.stringify(options));
+			debug('runImage:', JSON.stringify(options));
 			_matrix.runImage(options.image, options, resolve);
 		});
 
@@ -136,7 +138,7 @@ var App = function(argv) {
 
 			options.image = sprintf('%s/images/%dx%d/emojis/%d.png', __dirname, argv.height, argv.height, options.id);
 
-			console.log('runImage:', JSON.stringify(options));
+			debug('runImage:', JSON.stringify(options));
 			_matrix.runImage(options.image, options, resolve);
 		});
 
@@ -149,7 +151,7 @@ var App = function(argv) {
 			if (isString(options.fontName))
 				options.fontName = sprintf('%s/fonts/%s.ttf', __dirname, options.fontName);
 
-			console.log('runText:', JSON.stringify(options));
+			debug('runText:', JSON.stringify(options));
 			_matrix.runText(options.text, options, resolve);
 		});
 
@@ -165,7 +167,7 @@ var App = function(argv) {
 				var message = _queue.splice(0, 1)[0];
 
 				message.method(message.options == undefined ? {} : message.options).then(function() {
-					console.log('Dequeueing...');
+					debug('Dequeueing...');
 					return dequeue();
 				})
 				.then(function() {
@@ -175,6 +177,10 @@ var App = function(argv) {
 					reject(error);
 				})
 				.then(function() {
+					debug('Entering idle mode');
+					_socket.emit('idle', {});
+
+					
 					_busy = false;
 				});
 			}
@@ -215,9 +221,6 @@ var App = function(argv) {
 		.catch(function(error) {
 
 		}).then(function() {
-			console.log('Entering idle mode');
-			_socket.emit('idle', {});
-
 		})
 
 
