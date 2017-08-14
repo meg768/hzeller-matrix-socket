@@ -176,10 +176,7 @@ var App = function(argv) {
 				})
 				.then(function() {
 					_busy = false;
-					console.log('Entering idle mode');
-					_socket.emit('idle', {});
-			})
-
+				});
 			}
 			else {
 				resolve();
@@ -190,7 +187,6 @@ var App = function(argv) {
 
 	function enqueue(method, options) {
 
-		console.log('!!!!!');
 		if (options == undefined)
 			options = {};
 
@@ -198,7 +194,6 @@ var App = function(argv) {
 			method:method,
 			options:options
 		};
-		console.log(message);
 
 		if (options.priority == 'low' && _busy)
 			return;
@@ -218,6 +213,10 @@ var App = function(argv) {
 
 		})
 		.catch(function(error) {
+
+		}).then(function() {
+			console.log('Entering idle mode');
+			_socket.emit('idle', {});
 
 		})
 
