@@ -174,23 +174,20 @@ var App = function(argv) {
 	}
 	function dequeue() {
 		return new Promise(function(resolve, reject) {
-			if (_queue.length > 0 && !_busy) {
+			if (_queue.length > 0) {
 
-				_busy = true;
 				var message = _queue.splice(0, 1)[0];
 				var promise = message.method(message.options);
-				_busy = false;
 
 				promise.then(function() {
 					return dequeue();
 				})
-				.catch(function(error) {
-					reject(error);
-				})
 				.then(function() {
 					resolve();
+				})
+				.catch(function(error) {
+					reject(error);
 				});
-
 			}
 			else {
 				resolve();
