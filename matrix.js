@@ -145,7 +145,7 @@ var App = function(argv) {
 	}
 
 
-	function dequeue() {
+	function dequeueX() {
 		return new Promise(function(resolve, reject) {
 			if (_queue.length > 0 && !_busy) {
 
@@ -160,6 +160,36 @@ var App = function(argv) {
 					return dequeue();
 				})
 				.catch(function(error) {
+					console.log(error);
+				})
+				.then(function() {
+					resolve();
+				})
+			}
+			else {
+				resolve();
+			}
+
+		});
+	}
+	function dequeue() {
+		return new Promise(function(resolve, reject) {
+			if (_queue.length > 0 && !_busy) {
+
+				var promise = promise.resolve();
+
+				_busy = true;
+
+				while (_queue.length > 0) {
+					proise = promise.then(function) {
+						var message = _queue.splice(0, 1)[0];
+						return message.method(message.options);
+					});
+				}
+
+				_busy = false;
+
+				promise.catch(function(error) {
 					console.log(error);
 				})
 				.then(function() {
