@@ -154,7 +154,6 @@ var App = function(argv) {
 				var message = _queue.splice(0, 1)[0];
 				var promise = message.method(message.options == undefined ? {} : message.options);
 
-				_busy = false;
 
 				promise.then(function() {
 					return dequeue();
@@ -163,6 +162,7 @@ var App = function(argv) {
 					console.log(error);
 				})
 				.then(function() {
+					_busy = false;
 					resolve();
 				})
 				.then(function() {
