@@ -176,7 +176,7 @@ var App = function(argv) {
 		return new Promise(function(resolve, reject) {
 			if (_queue.length > 0 && !_busy) {
 
-				var promise = promise.resolve();
+				var promise = Promise.resolve();
 
 				_busy = true;
 
