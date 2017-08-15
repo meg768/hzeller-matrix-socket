@@ -181,7 +181,7 @@ var App = function(argv) {
 				_busy = true;
 
 				while (_queue.length > 0) {
-					proise = promise.then(function) {
+					proise = promise.then(function() {
 						var message = _queue.splice(0, 1)[0];
 						return message.method(message.options);
 					});
