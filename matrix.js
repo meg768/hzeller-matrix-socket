@@ -181,8 +181,12 @@ var App = function(argv) {
 				_busy = true;
 
 				while (_queue.length > 0) {
+
 					promise = promise.then(function() {
-						var message = _queue.splice(0, 1)[0];
+						return _queue.splice(0, 1)[0];
+					});
+
+					promise = promise.then(function(message) {
 						console.log(message);
 						return message.method(message.options);
 					});
