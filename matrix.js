@@ -145,33 +145,7 @@ var App = function(argv) {
 	}
 
 
-	function dequeueX() {
-		return new Promise(function(resolve, reject) {
-			if (_queue.length > 0 && !_busy) {
 
-				_busy = true;
-
-				var message = _queue.splice(0, 1)[0];
-				var promise = message.method(message.options == undefined ? {} : message.options);
-
-				_busy = false;
-
-				promise.then(function() {
-					return dequeue();
-				})
-				.catch(function(error) {
-					console.log(error);
-				})
-				.then(function() {
-					resolve();
-				})
-			}
-			else {
-				resolve();
-			}
-
-		});
-	}
 	function dequeue() {
 		return new Promise(function(resolve, reject) {
 			if (_queue.length > 0) {
@@ -209,6 +183,8 @@ var App = function(argv) {
 		if (options.priority == 'low' && _busy)
 			return;
 
+		var isEmpty = _queue.length == 0;
+
 		if (options.priority == '!') {
 			_queue = [message];
 			_matrix.stop();
@@ -220,13 +196,19 @@ var App = function(argv) {
 			_queue.push(message);
 		}
 
-		dequeue().then(function() {
-			debug('Entering idle mode...');
-			_socket.emit('idle', {});
-		})
-		.catch(function(error) {
+		if (!_busy) {
+			_busy = true;
 
-		});
+			dequeue().then(function() {
+				debug('Entering idle mode...');
+				_busy = false;
+				_socket.emit('idle', {});
+			})
+			.catch(function(error) {
+
+			});
+
+		}
 
 
 	}
