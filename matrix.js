@@ -200,13 +200,15 @@ var App = function(argv) {
 			_busy = true;
 
 			dequeue().then(function() {
+			})
+			.catch(function(error) {
+			})
+			.then(function() {
 				debug('Entering idle mode...');
 				_busy = false;
 				_socket.emit('idle', {});
-			})
-			.catch(function(error) {
 
-			});
+			})
 
 		}
 
