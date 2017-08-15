@@ -176,30 +176,21 @@ var App = function(argv) {
 		return new Promise(function(resolve, reject) {
 			if (_queue.length > 0 && !_busy) {
 
-				var promise = Promise.resolve();
-
 				_busy = true;
-
-				while (_queue.length > 0) {
-
-					promise = promise.then(function() {
-						return _queue.splice(0, 1)[0];
-					});
-
-					promise = promise.then(function(message) {
-						console.log(message);
-						return message.method(message.options);
-					});
-				}
-
+				var message = _queue.splice(0, 1)[0];
+				var promise = message.method(message.options);
 				_busy = false;
 
-				promise.catch(function(error) {
-					console.log(error);
+				promise.then(function() {
+					return dequeue();
+				})
+				.catch(function(error) {
+					reject(error);
 				})
 				.then(function() {
 					resolve();
-				})
+				});
+
 			}
 			else {
 				resolve();
