@@ -172,18 +172,13 @@ var App = function(argv) {
 
 	function enqueue(method, options) {
 
-		if (options == undefined)
-			options = {};
-
 		var message = {
 			method:method,
-			options:options
+			options:options || {}
 		};
 
 		if (options.priority == 'low' && _busy)
 			return;
-
-		var isEmpty = _queue.length == 0;
 
 		if (options.priority == '!') {
 			_queue = [message];
@@ -199,13 +194,13 @@ var App = function(argv) {
 		if (!_busy) {
 			_busy = true;
 
-			dequeue().then(function() {
-			})
-			.catch(function(error) {
+			dequeue().catch(function(error) {
+				console.log(error);
 			})
 			.then(function() {
-				debug('Entering idle mode...');
 				_busy = false;
+
+				debug('Entering idle mode...');
 				_socket.emit('idle', {});
 
 			})
