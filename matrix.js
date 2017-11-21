@@ -256,7 +256,7 @@ var App = function(argv) {
 
 			console.log('Started', new Date());
 
-			_socket = require('socket.io-client')('http://app-o.se/matrix?' + argv.service);
+			_socket = require('socket.io-client')('http://app-o.se/matrix?instance=' + argv.service);
 
 			_socket.on('connect', function() {
 				console.log('Connected to socket server!');
