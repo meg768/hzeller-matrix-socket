@@ -36,7 +36,6 @@ var App = function(argv) {
 
 		args.option('height',   {alias:'H',      describe:'Height of RGB matrix', default:32});
 		args.option('width',    {alias:'W',      describe:'Width of RGB matrix', default:32});
-		args.option('service',  {alias:'s',      describe:'Name of service', default:'32x32'});
 		args.option('simulate', {alias:'m',      describe:'Not running on a Raspberry Pi?', default:false});
 
 		args.wrap(null);
@@ -256,7 +255,7 @@ var App = function(argv) {
 
 			console.log('Started', new Date());
 
-			_socket = require('socket.io-client')('http://app-o.se/matrix?instance=' + argv.service);
+			_socket = require('socket.io-client')(sprintf('http://app-o.se/matrix?instance=%dx%d', argv.width, argv.height));
 
 			_socket.on('connect', function() {
 				console.log('Connected to socket server!');
